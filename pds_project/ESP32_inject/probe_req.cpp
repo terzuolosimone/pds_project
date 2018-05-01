@@ -1,20 +1,3 @@
-/*
- * PART OF THE ESP32 IEEE 802.11 SNIFFING PROJECT
- * This part will be injected in the ESP32 card.
- * This part implements the NON-STANDARD library "tins.lib"
- * 	developed by Matias Fontanini, that drastically simplify 
- * 	our lives, so I'm gomma give this man the credits he deserves.
- * Anyway, here we capture the PROBE-REQUEST packets sent by
- * 	various devices and we store them in the local mass memory.
- * The commenting game is pretty solid, so the code should be easy
- * 	to understand.
- * 
- * NOTES:
- * The interface of the sniffer (ESP32) is set in promiscous mode
- * 	so that the device is totally transparent for the lan;
- * 
- * 
- */
  
 #include <iostream>
 #include <set>
@@ -74,16 +57,20 @@ void ProbereqSniffer::run(const std::string& iface) {
 		    std::chrono::microseconds us = ts;
 		    std::chrono::microseconds us_relative = ts_relative;
 		    float time_rel = (float)(us.count()-us_relative.count())/MICRO_TO_SEC;
+		    // Get the sequence number
+		    int seqnum = (int)probereq.seq_num();
 		    // Display what we got - only to be sure it's working
 		    cout << "MAC addr: " << addr
 		    << " - Signal: " << sig
 		    << "(dBm) - SSID: " << ssid 
 		    << " - Timestamp: " << std::fixed << std::setprecision(6) << time_rel
-		    << " seconds" << endl;
+		    << " seconds - SeqNum: " << seqnum
+		    << endl;
 		    // Write to file
 		    outfile << addr << " " 
 		    << sig << " " << ssid
-		    << " " << std::fixed << std::setprecision(6) << time_rel << endl;
+		    << " " << std::fixed << std::setprecision(6) << time_rel
+		    << " " << seqnum << endl;
 		    // NOTE: Gotta add those packet hash values, but I don't know what they are...
 	    }
 	}

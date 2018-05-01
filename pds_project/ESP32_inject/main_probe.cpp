@@ -1,3 +1,19 @@
+/*
+ * BACK-END PART OF THE ESP32 IEEE 802.11 SNIFFING PROJECT
+ * This part will be injected in the ESP32 card.
+ * This part implements the NON-STANDARD library "tins.lib"
+ *  developed by Matias Fontanini, that drastically simplify 
+ *  our lives, so I'm gomma give this man the credits he deserves.
+ * Anyway, here we capture the PROBE-REQUEST packets sent by
+ *  various devices and we store them in the local mass memory.
+ * The commenting game is pretty solid, so the code should be easy
+ *  to understand.
+ * 
+ * NOTES:
+ * The interface of the sniffer (ESP32) is set in promiscous mode
+ *  so that the device is totally transparent for the lan;
+ */
+
 #include <iostream>
 #include <set>
 #include <string>
@@ -15,11 +31,11 @@ using std::string;
 using std::cout;
 using std::endl;
 
-int main() {
-    /* In the definitive version "wlan0mon" will be replaced with the name
+int main(int argc, char* argv[]) {
+    /* In the definitive version argv[1] will be replaced with the name
      *  of the ESP32 interface.
      */
-    string interface = "wlan0mon";
+    string interface = argv[1];
     // Create an instance for the server side
     struct addrinfo *res;
     char filename[] = "test.txt";
@@ -45,12 +61,13 @@ int main() {
 	    }
 	    exitsig.set_value();
 	    probe_req_th.join();
-	    cout << "END OF THIS PART 1" << endl;
+	    cout << "END OF PART 1 - probe_request sniffed" << endl;
 	    /* SECOND PART
 	     * In the second part the program simply send over the file
 	     *  in the previous part.
 	     */
 	    file_send_recv(sock, res, filename);
+        cout << "END OF PART 2 - file sent" << endl;
 	}
     return 0;
 }

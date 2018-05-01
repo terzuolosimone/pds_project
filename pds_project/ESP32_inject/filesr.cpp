@@ -43,7 +43,7 @@ addrinfo *get_socket(int &sock){
 
 int file_send_recv(int sockfd, struct addrinfo *res, char filename[]){
 	/* Set timeval and select, so if the timers runs out
-	 * becouse various reasons, everything stops (we have to think about that)
+	 * because various reasons, everything stops (we have to think about that)
 	 */
 	/*struct timeval timeout;
 	timeout.tv_sec = 5;

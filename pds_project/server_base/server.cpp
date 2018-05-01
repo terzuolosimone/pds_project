@@ -18,13 +18,16 @@ void service(int connfd, struct sockaddr_in cliaddr, socklen_t cliaddrlen){
 	fprintf(fo, "%s\n", filename);
 	fclose(fo);
 	while(true){
+		// What about a select here?
 		bzero(buff, MAXBUFL);
 		char filesize[10];
 		recvfrom(connfd, filesize, sizeof(uint32_t), 0, (struct sockaddr*)&cliaddr, &cliaddrlen);
 		uint32_t size = ntohl((*(uint32_t*)filesize));
 		recvfrom(connfd, buff, size*sizeof(char), 0, (struct sockaddr*)&cliaddr, &cliaddrlen);
-		if(size > 0)
+		if(size > 0){
+			//cout << size << buff << endl;
 			outfile << buff << endl;
+		}
 	}
 }
 
@@ -57,12 +60,11 @@ int server(){
 	bind(listenfd, (SA*) &servaddr, sizeof(servaddr));
 
 	listen(listenfd, LISTENQ);
-	int x = 0;
+
 	while(true){
 		// Accept section
-		x++;
 		cout << "Waiting for connections..." << endl;
-		connfd = accept(listenfd, (SA*) &cliaddr, &cliaddrlen) + x;
+		connfd = accept(listenfd, (SA*) &cliaddr, &cliaddrlen);
 		if(connfd < 0)
 			return -1;
 		cout << "New connection from client "
