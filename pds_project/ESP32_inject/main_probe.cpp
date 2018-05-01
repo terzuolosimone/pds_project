@@ -15,20 +15,16 @@ using std::string;
 using std::cout;
 using std::endl;
 
-int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        cout << "Usage: " <<* argv << " <interface>" << endl;
-        return 1;
-    }
-    /* In the definitive version argc and argv[] will not be
-     *  implemented and argv[1] will be replaced with the name
+int main() {
+    /* In the definitive version "wlan0mon" will be replaced with the name
      *  of the ESP32 interface.
      */
+    string interface = "wlan0mon";
+    // Create an instance for the server side
     struct addrinfo *res;
     char filename[] = "test.txt";
     int sock;
     res = get_socket(sock);
-    string interface = argv[1];
     // Infinite loop bitches!
     while(true){
        /* FIRST PART    
@@ -55,7 +51,6 @@ int main(int argc, char* argv[]) {
 	     *  in the previous part.
 	     */
 	    file_send_recv(sock, res, filename);
-
 	}
     return 0;
 }

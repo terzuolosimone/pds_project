@@ -10,21 +10,25 @@ using std::runtime_error;
 void service(int connfd, struct sockaddr_in cliaddr, socklen_t cliaddrlen){
 	char buff[MAXBUFL];
 	char filename[30];
-	sprintf(filename, "ESP32_test_%d.txt", connfd);
+	sprintf(filename, "ESP32_test_%d.txt", cliaddr.sin_port);
 	int i;
 	std::ofstream outfile (filename);
+	FILE *fo;
+	fo = fopen("ESPnames.txt", "a+");
+	fprintf(fo, "%s\n", filename);
+	fclose(fo);
 	while(true){
-		//bzero(buff, MAXBUFL);
+		bzero(buff, MAXBUFL);
 		char filesize[10];
 		recvfrom(connfd, filesize, sizeof(uint32_t), 0, (struct sockaddr*)&cliaddr, &cliaddrlen);
 		uint32_t size = ntohl((*(uint32_t*)filesize));
 		recvfrom(connfd, buff, size*sizeof(char), 0, (struct sockaddr*)&cliaddr, &cliaddrlen);
 		if(size > 0)
-			outfile << buff << endl;;
+			outfile << buff << endl;
 	}
 }
 
-int main(){ //server(){
+int server(){
 	int listenfd, connfd, err=0;
 	short port;
 	struct sockaddr_in servaddr, cliaddr;
