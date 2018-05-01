@@ -1,0 +1,11 @@
+TO DO LIST
+
+1) ESP: probe_request sniffer --------------------------------- YEAH
+	write down probe_request on a file -------------------- YEAH
+	time management (60 seconds before listening-timeout) - YEAH
+	send file to server ----------------------------------- YEAH
+	synchronization --------------------------------------- NO
+
+2) PC:  receive file ------------------------------------------ YEAH
+	synchronization --------------------------------------- NO
+	everything else --------------------------------------- NO
