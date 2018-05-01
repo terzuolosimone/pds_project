@@ -4,10 +4,12 @@
 #include <fstream>
 #include <ctime>
 #include <iomanip>
-#include "probe_req.h"
 #include <tins/tins.h>
 #include <thread>
 #include <future>
+
+#include "probe_req.h"
+#include "filesr.h"
 
 using std::string;
 using std::cout;
@@ -22,6 +24,10 @@ int main(int argc, char* argv[]) {
      *  implemented and argv[1] will be replaced with the name
      *  of the ESP32 interface.
      */
+    struct addrinfo *res;
+    char filename[] = "test.txt";
+    int sock;
+    res = get_socket(sock);
     string interface = argv[1];
     // Infinite loop bitches!
     while(true){
@@ -37,7 +43,7 @@ int main(int argc, char* argv[]) {
 	    std::future<void> future_obj = exitsig.get_future();
 	    std::thread probe_req_th(&probe_request_scanner, interface, std::move(future_obj));
 	    int i = 0;
-	    while(i<60){
+	    while(i<30){
 	    	cout << ++i << endl;
 	    	std::this_thread::sleep_for(std::chrono::seconds(1));
 	    }
@@ -48,6 +54,8 @@ int main(int argc, char* argv[]) {
 	     * In the second part the program simply send over the file
 	     *  in the previous part.
 	     */
+	    file_send_recv(sock, res, filename);
+
 	}
     return 0;
 }

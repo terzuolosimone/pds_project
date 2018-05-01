@@ -1,6 +1,6 @@
 
-#ifndef TINS_TINS_H
-#define TINS_TINS_H
+#ifndef PROBE_REQ_H
+#define PROBE_REQ_H
 
 #define MICRO_TO_SEC 1000000
  
