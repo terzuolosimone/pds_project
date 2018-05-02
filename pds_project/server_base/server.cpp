@@ -65,6 +65,9 @@ int server(){
 		// Accept section
 		cout << "Waiting for connections..." << endl;
 		connfd = accept(listenfd, (SA*) &cliaddr, &cliaddrlen);
+        
+        // francesco merda
+        
 		if(connfd < 0)
 			return -1;
 		cout << "New connection from client "
