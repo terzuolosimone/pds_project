@@ -16,8 +16,3 @@ int main(){
 	
 	file_writer.join();
 }
-
-
-
-
-//malnati ha dei bei capelli
