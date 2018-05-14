@@ -18,6 +18,9 @@
 #include <unistd.h>
 #include <errno.h>
 #include <arpa/inet.h> 
+#include <cerrno>
+#include <iostream>
+#include <string>
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
@@ -57,7 +60,7 @@ void client(){
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(15100); 
 
-    if(inet_pton(AF_INET, "192.168.1.133", &serv_addr.sin_addr)<=0)
+    if(inet_pton(AF_INET, "192.168.4.3"/*"192.168.1.134"*/, &serv_addr.sin_addr)<=0)
     {
         printf("\n inet_pton error occured\n");
         return;
@@ -66,8 +69,10 @@ void client(){
     if( connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
     {
        printf("\n Error : Connect Failed \n");
+       std::cout << strerror(errno) << std::endl;
        return;
     } 
+    printf("size: %u\n", strlen(send_out_buff));
     printf("\nCONNECTED LOL\n");
 
     /*int i;
@@ -77,12 +82,35 @@ void client(){
     }
     print("SIZE = %d\n", i);*/
     char size[20];
+    int dim=500;
     sprintf(size, "%d", strlen(send_out_buff));
-
+    printf("size: %s\n", size);
+    int size_atoi = (int)atoi(size);
     write(sockfd, size, strlen(size));
-
-    write(sockfd, send_out_buff, strlen(send_out_buff));
-
+    if(size_atoi >= dim){
+	    int x=0;
+	    int count=((size_atoi/dim)+1);
+	    printf("ATOI SIZE: %d\n", size_atoi);
+	    printf("COUNT: %d\n", count);
+	    char tmp[dim];
+	    int j;
+	    int i = 0;
+	    for(j=0;j<count;j++){
+	    	bzero(tmp, sizeof(tmp));
+	    	for(x=0; x<dim; x++){
+	    		if(send_out_buff[i] == '\0')
+	    			break;
+	    		tmp[x] = send_out_buff[i];
+	    		i++;
+	    	}
+	    	tmp[x] = '\0';
+			write(sockfd, tmp, strlen(tmp));
+		}
+	}
+	else{
+		printf("PORCO IL DIO");
+		write(sockfd, send_out_buff, strlen(send_out_buff));
+	}
     if((n = read(sockfd, recvBuff, sizeof(recvBuff)-1)) > 0)
     {
         recvBuff[n] = 0;
@@ -103,7 +131,7 @@ void sniffer(void *buf, wifi_promiscuous_pkt_type_t type){
     wifi_promiscuous_pkt_t *p = (wifi_promiscuous_pkt_t*)buf;
     wifi_mgt_hdr *wh = (wifi_mgt_hdr*) p->payload;
     char tmp[255];
-    if((int)wh->fctl == 64){
+    if((int)wh->fctl == 64 && (int)wh->bssid[3] == 255){
         /*printf("\n\nPROBE_REQUEST_FOUND!!!!\n\n");
         printf("RSSI: %d, TIMESTAMP: %u ", (int)p->rx_ctrl.rssi, p->rx_ctrl.timestamp);
         printf("MAC DST: %x:%x:%x:%x:%x:%x, "
@@ -139,11 +167,11 @@ void start_loop(){
         memset(send_out_buff, '0', sizeof(send_out_buff));
         send_out_buff[0] = '\0';
         esp_wifi_set_promiscuous(true);
-        vTaskDelay(30000 / portTICK_PERIOD_MS);
+        vTaskDelay(7000 / portTICK_PERIOD_MS);
         printf("CLIENT TURN\n");
         flag = 1;
         client();
-        vTaskDelay(10000 / portTICK_PERIOD_MS);
+        vTaskDelay(7000 / portTICK_PERIOD_MS);
      }
 }
 
@@ -172,8 +200,8 @@ int app_main(void){
 	 ESP_ERROR_CHECK(esp_wifi_init(&cfg) );
 
 	 wifi_config_t sta_config = { };
-	 strcpy((char*)sta_config.sta.ssid, "FASTWEB-VLML59");
-	 strcpy((char*)sta_config.sta.password, "A7YSCN92MS");
+	 strcpy((char*)sta_config.sta.ssid, "myssid");//"simosoneppe");
+	 strcpy((char*)sta_config.sta.password, "mypassword");//"Pamparato.11.7");
 
 	 ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_STA));
 	 ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &sta_config));
