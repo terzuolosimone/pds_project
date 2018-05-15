@@ -105,12 +105,12 @@ void client(){
 	    	}
 	    	tmp[x] = '\0';
 			write(sockfd, tmp, strlen(tmp));
-		}
-	}
-	else{
-		printf("PORCO IL DIO");
-		write(sockfd, send_out_buff, strlen(send_out_buff));
-	}
+	    }
+    }
+    else{
+	    printf("PORCO IL DIO");
+            write(sockfd, send_out_buff, strlen(send_out_buff));
+    }
     if((n = read(sockfd, recvBuff, sizeof(recvBuff)-1)) > 0)
     {
         recvBuff[n] = 0;
